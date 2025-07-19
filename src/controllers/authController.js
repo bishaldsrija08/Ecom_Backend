@@ -3,8 +3,9 @@
 import jwt from 'jsonwebtoken'
 import User from "../models/UserModel.js"
 import bcrypt from 'bcrypt'
-import generateOTP from '../services/generateOpt.js'
+import generateOTP from '../config/generateOpt.js'
 import Otp from '../models/OtpModel.js'
+import { sendMail } from '../utils/sendMail.js'
 
 const registerUser = async (req, res) => {
     const { userName, email, password, confirmPassword } = req.body
@@ -108,6 +109,7 @@ const forgotPassword = async (req, res) => {
             email,
             otp
         })
+        sendMail(email, otp)
         res.status(200).json({
             message: "otp sent successfully",
             data
