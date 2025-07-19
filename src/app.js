@@ -1,12 +1,14 @@
 import express from 'express'
 const app = express()
+
+import dotenv  from 'dotenv'
+dotenv.config()
+
 import productRoutes from './routes/productRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 
 import connectDb from './config/database.js';
 connectDb()
-import dotenv  from 'dotenv'
-dotenv.config()
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))

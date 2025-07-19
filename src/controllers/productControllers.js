@@ -33,7 +33,10 @@ const createProduct = async (req, res) => {
 
 const getAllProducts = async (req, res) => {
     try {
-        const data = await Product.find()
+        const query = req.query
+        // For sorting and filtering
+        const sort = JSON.parse(query.sort || '{}')
+        const data = await Product.find({}).sort(sort).limit(5)
         res.status(200).json({
             data,
             message: "All product fetch successfully!"
@@ -109,7 +112,7 @@ const updateProduct = async (req, res) => {
             rom,
             gen,
             brand
-        },{new:true})
+        }, { new: true })
         res.status(200).json({
             message: "Product updated successfully!"
         })
