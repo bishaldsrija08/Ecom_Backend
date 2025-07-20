@@ -150,6 +150,13 @@ const verifyOtp = async (req, res) => {
                 message: "Invalis OTP!"
             })
         }
+
+        //OTP verify vayac isOTPVerified true parne in User table
+        await User.findOneAndUpdate({ email }, { isOtpVerified: true }, { new: true })
+
+        // OTP verify vayac Otp table bata opt udaune!
+        await Otp.findOneAndDelete({ email })
+
         res.status(200).json({
             message: "OTP is verified!",
             data: doesHaveOtp
@@ -178,13 +185,22 @@ const resetPassword = async (req, res) => {
                 message: "User is not registerd!"
             })
         }
-        await User.findOneAndUpdate({ email }, {
-            password: await bcrypt.hashSync(password, 10)
-        }, { new: true })
 
-        res.status(200).json({
-            message: "Your password is reset, Please login!"
+        if (doesUserMatch.isOtpVerified) {
+            await User.findOneAndUpdate({ email }, {
+                password: await bcrypt.hashSync(password, 10),
+                isOtpVerified: false
+            }, { new: true })
+
+            res.status(200).json({
+                message: "Your password is reset, Please login!"
+            })
+        }
+        res.status(400).json({
+            message: "Please verify your otp before changing password!"
         })
+
+
 
     } catch (error) {
         res.status(400).json({

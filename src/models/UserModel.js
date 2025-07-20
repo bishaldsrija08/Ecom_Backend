@@ -18,10 +18,15 @@ const User = mongoose.model("User", new mongoose.Schema({
         type: String,
         enum: ['CUSTOMER', 'ADMIN'],
         default: 'CUSTOMER'
+    },
+    isOtpVerified: {
+        type: Boolean,
+        default: false
     }
 
 }, {
-    timestamps: true
+    timestamps: true,
+    versionKey: false
 }))
 
 export default User
