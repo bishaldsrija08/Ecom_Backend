@@ -1,6 +1,8 @@
 import express from 'express'
 const app = express()
 
+import cors from 'cors'
+
 import envConfig from './config/envConfig.js';
 envConfig()
 
@@ -12,6 +14,11 @@ connectDb()
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}))
 
 
 app.use('/api', productRoutes)

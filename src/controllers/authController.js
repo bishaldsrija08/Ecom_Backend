@@ -36,11 +36,11 @@ const registerUser = async (req, res) => {
                 message: "User registered successfully!s"
             })
         }
-        res.status(400).json({
+       return res.status(400).json({
             message: "User already exists with that email."
         })
     } catch (error) {
-        res.status(400).json({
+       return res.status(400).json({
             message: error.messages
         })
     }
