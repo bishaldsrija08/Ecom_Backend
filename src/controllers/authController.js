@@ -36,11 +36,11 @@ const registerUser = async (req, res) => {
                 message: "User registered successfully!s"
             })
         }
-       return res.status(400).json({
+        return res.status(400).json({
             message: "User already exists with that email."
         })
     } catch (error) {
-       return res.status(400).json({
+        return res.status(400).json({
             message: error.messages
         })
     }
@@ -92,31 +92,38 @@ const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body
         if (!email) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "Must provide email to continue."
             })
         }
         const doesUserExist = await User.findOne({ email })
         if (!doesUserExist) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "User doesn't exists."
             })
         }
-        // it meanse user xa
+        // it meanse user xa User table ma
+        // User le already otp sent gareko xa ki nai?
+        const doesUserSentOtp = await Otp.findOne({ email })
+        if (!doesUserSentOtp) {
 
-        const otp = generateOTP()
-        const data = await Otp.create({
-            email,
-            otp
-        })
-        sendMail(email, otp)
-        res.status(200).json({
-            message: "otp sent successfully",
-            data
+            const otp = generateOTP()
+            const data = await Otp.create({
+                email,
+                otp
+            })
+            sendMail(email, otp)
+            return res.status(200).json({
+                message: "otp sent successfully",
+                data
+            })
+        }
+        return res.status(400).json({
+            message: "Wait 2 sec!!"
         })
 
     } catch (error) {
-        res.status(400).json({
+        return res.status(400).json({
             message: error.message
         })
     }
@@ -174,14 +181,14 @@ const resetPassword = async (req, res) => {
     try {
         const { email, password } = req.body
         if (!email || !password) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "User email and password are madetory to input."
             })
         }
 
         const doesUserMatch = await User.findOne({ email: email })
         if (!doesUserMatch) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "User is not registerd!"
             })
         }
@@ -192,18 +199,18 @@ const resetPassword = async (req, res) => {
                 isOtpVerified: false
             }, { new: true })
 
-            res.status(200).json({
+            return res.status(200).json({
                 message: "Your password is reset, Please login!"
             })
         }
-        res.status(400).json({
+        return res.status(400).json({
             message: "Please verify your otp before changing password!"
         })
 
 
 
     } catch (error) {
-        res.status(400).json({
+        return res.status(400).json({
             message: error.message
         })
     }
