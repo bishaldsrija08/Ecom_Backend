@@ -74,7 +74,11 @@ const loginUser = async (req, res) => {
         }
 
         const token = jwt.sign(payload, process.env.SECRET_KEY)
-        res.cookie('authToken', token)
+        res.cookie('authToken', token, {
+
+            httpOnly: true,
+            maxAge: 1000 * 60 * 60 * 5
+        })
         res.status(200).json({
             message: "User loggedIn successfully.",
             token
@@ -113,6 +117,10 @@ const forgotPassword = async (req, res) => {
                 otp
             })
             sendMail(email, otp)
+            res.cookie("email", email, {
+                maxAge: 1*60*60*1000,
+                httpOnly: true
+            })
             return res.status(200).json({
                 message: "otp sent successfully",
                 data
