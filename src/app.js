@@ -8,12 +8,14 @@ envConfig()
 
 import productRoutes from './routes/productRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import cookieParser from 'cookie-parser'
 
 import connectDb from './config/database.js';
 connectDb()
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
+app.use(cookieParser());
 
 app.use(cors({
     origin: "http://localhost:5173",

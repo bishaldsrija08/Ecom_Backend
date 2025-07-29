@@ -224,4 +224,40 @@ const resetPassword = async (req, res) => {
     }
 }
 
-export { registerUser, loginUser, forgotPassword, verifyOtp, resetPassword }
+const restrictAuthPages = async (req, res) => {
+    const { step } = req.params;
+    const token = req.cookies.authToken;
+    try {
+        if (step === "home") {
+            if (!token) {
+                return res.status(400).json({
+                    message: "Please login to proceed."
+                });
+            }
+
+            const isValid = verifyToken(token);
+            if (!isValid) {
+                return res.status(400).json({
+                    message: "Token expired"
+                });
+            }
+        }
+
+        if (step === "otp") {
+            // logic for this step (if any)
+        }
+
+        // ✅ Only sends this if the above checks passed
+        return res.status(200).json({
+            message: "Verification successful"
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(400).json({
+            message: error.message
+        });
+    }
+}
+
+export { registerUser, loginUser, forgotPassword, verifyOtp, resetPassword, restrictAuthPages }
