@@ -77,7 +77,7 @@ const loginUser = async (req, res) => {
         res.cookie('authToken', token, {
 
             httpOnly: true,
-            maxAge: 1000 * 60 * 60 * 5
+            maxAge: 1000 * 60 * 60 * 5 * 5000
         })
         res.status(200).json({
             message: "User loggedIn successfully.",
@@ -118,7 +118,7 @@ const forgotPassword = async (req, res) => {
             })
             sendMail(email, otp)
             res.cookie("email", email, {
-                maxAge: 1*60*60*1000,
+                maxAge: 1 * 60 * 60 * 1000,
                 httpOnly: true
             })
             return res.status(200).json({
@@ -227,6 +227,7 @@ const resetPassword = async (req, res) => {
 const restrictAuthPages = async (req, res) => {
     const { step } = req.params;
     const token = req.cookies.authToken;
+    const email = req.cookies.email;
     try {
         if (step === "home") {
             if (!token) {
@@ -243,8 +244,34 @@ const restrictAuthPages = async (req, res) => {
             }
         }
 
-        if (step === "otp") {
+        if (step === "verify-otp") {
             // logic for this step (if any)
+            if (!email) {
+                return res.status(400).json({
+                    message: "Email not found!"
+                })
+            }
+            const isOtp = await Otp.findOne({ email })
+            if (!isOtp) {
+                return res.status(400).json({
+                    message: 'No Otp found!'
+                })
+
+            }
+        }
+        if (step === "reset-password") {
+            // logic for this step (if any)
+            if (!email) {
+                return res.status(400).json({
+                    message: "Email not found!"
+                })
+            }
+            const userOtp = await Otp.findOne({ email })
+            if (new Date() > userOtp.otpExpiryDate) {
+                return res.status(400).json({
+                    message: "No Otp"
+                })
+            }
         }
 
         // ✅ Only sends this if the above checks passed
